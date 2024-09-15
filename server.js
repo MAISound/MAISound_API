@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexão com o MongoDB
-mongoose.connect('mongodb+srv://cc23317:<4nei7agNH9rVqeY3>@maisound.0pola.mongodb.net/?retryWrites=true&w=majority&appName=MaiSound', {
+mongoose.connect('mongodb+srv://cc23317:4nei7agNH9rVqeY3@maisound.0pola.mongodb.net/?retryWrites=true&w=majority&appName=MaiSound', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log('MongoDB conectado'))
