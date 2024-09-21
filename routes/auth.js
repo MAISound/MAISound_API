@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Registro
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     try {
         // Verificar se o usuário já existe
@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
 
         // Criar um novo usuário
         const newUser = new User({
-            username,
+            name,
             email,
             password: hashedPassword
         });
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
         // Gerar token JWT
         const token = jwt.sign({ id: user._id }, 'segredo', { expiresIn: '1h' });
 
-        res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+        res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
     } catch (err) {
         res.status(500).json({ message: 'Erro ao fazer login', err });
     }
