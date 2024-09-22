@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth')
+const cookieParser = require('cookie-parser')
 
 // Configuração do app
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 // Conexão com o MongoDB
 mongoose.connect('mongodb+srv://cc23317:4nei7agNH9rVqeY3@maisound.0pola.mongodb.net/?retryWrites=true&w=majority&appName=MaiSound', {
