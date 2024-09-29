@@ -15,6 +15,6 @@ Esta é uma API desenvolvida em Node.js que se conecta ao MongoDB para gerenciar
    cd MAISound_API
 
 2. **Execute o programa**
-  ```bash
-  node server.js
+   ```bash
+   node server.js
 
