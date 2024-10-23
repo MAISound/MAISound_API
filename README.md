@@ -20,3 +20,76 @@ Esta é uma API desenvolvida em Node.js que se conecta ao MongoDB para gerenciar
 
 ## Manual
 
+`GET "/"`
+
+```json
+{ 
+   "message": "Usuário autenticado com sucesso" 
+}
+```
+
+`GET "/users/"`
+
+Retorna uma lista de usuários.
+Provavelmente será removido no futuro.
+
+`POST "/register"`
+
+```json
+{ 
+   "name": "Teste" ,
+   "email": "teste@teste.com",
+   "password": "123456"
+}
+```
+
+RESPONSE
+
+```json
+{
+  "message": "Usuário criado com sucesso", 
+  "session": "token"
+}
+```
+
+`POST "/login"`
+
+```json
+{ 
+   "email": "teste@teste.com",
+   "password": "123456"
+}
+```
+
+RESPONSE
+
+```json
+{ 
+   "session": "token", 
+   "user": { 
+      "id": "123456", 
+      "name": "teste", 
+      "email": "teste@teste.com" 
+      }, 
+   "message": "Usuário fez login com êxito" 
+}
+```
+
+`DELETE "/user/:id"`
+
+PRECISAMOS MUDAR ISSO AQUI URGENTEMENTE!!!
+
+```json
+{ 
+   "id": "123",
+}
+```
+
+RESPONSE
+
+```json
+{ 
+   "message": "Usuário deletado com sucesso"
+}
+```
+
