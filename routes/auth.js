@@ -54,7 +54,7 @@ router.post('/chat', async (req, res) => {
 
 // Salvando o projeto no banco de dados:
 router.post("/project", async (req, res) => {
-    const { name, bpm, instruments, tracks} = req.body;
+    const { name, bpm, instruments, tracks } = req.body;
     const userId = getUserByToken(req);
 
     // Verifica o usuário
@@ -105,7 +105,7 @@ router.put('/project', async (req, res) => {
         // Atualiza o projeto
         project.name = name || project.name;
         project.bpm = bpm || project.bpm;
-        project.instruments = isntruments|| project.instruments;
+        project.instruments = instruments || project.instruments;
         project.tracks = tracks || project.tracks;
 
         await project.save(); // Salva as alterações
