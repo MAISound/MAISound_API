@@ -23,6 +23,10 @@ router.get('/exemplo', async (req, res) => {
     return res.status(201).json({ message: 'Sucesso' });
 })
 
+// ==========================================
+//                 IA
+// ==========================================
+
 // Enviando mensagem para a IA
 router.post('/chat', async (req, res) => {
     const userId = getUserByToken(req);
@@ -31,12 +35,20 @@ router.post('/chat', async (req, res) => {
         return res.status(500).json({ message: 'Usuário inválido' });
     }
 
+    const { message } = req.body;
+
+    
+
     // Faz alguma coisa com o ID do usuario
     // :)
 
     return res.status(201).json({ message: 'Sucesso' });
 })
 
+
+// ==========================================
+//              PROJETO
+// ==========================================
 
 // Salvando o projeto no banco de dados:
 router.post("/project", async (req, res) => {
