@@ -18,3 +18,5 @@ Esta é uma API desenvolvida em Node.js que se conecta ao MongoDB para gerenciar
    ```bash
    node server.js
 
+## Manual
+

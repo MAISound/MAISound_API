@@ -23,6 +23,20 @@ router.get('/exemplo', async (req, res) => {
     return res.status(201).json({ message: 'Sucesso' });
 })
 
+// Enviando mensagem para a IA
+router.post('/chat', async (req, res) => {
+    const userId = getUserByToken(req);
+
+    if (!userId) {
+        return res.status(500).json({ message: 'Usuário inválido' });
+    }
+
+    // Faz alguma coisa com o ID do usuario
+    // :)
+
+    return res.status(201).json({ message: 'Sucesso' });
+})
+
 
 // Salvando o projeto no banco de dados:
 router.post("/project", async (req, res) => {
