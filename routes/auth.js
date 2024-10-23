@@ -6,8 +6,12 @@ const User = require('../models/user');
 const Session = require('../models/session');
 const Project = require('../models/project')
 const router = express.Router();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
 
-
+// Instancia a IA Gemini
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // EXEMPLO:
 router.get('/exemplo', async (req, res) => {
@@ -29,22 +33,20 @@ router.get('/exemplo', async (req, res) => {
 
 // Enviando mensagem para a IA
 router.post('/chat', async (req, res) => {
+    const { prompt } = req.body;
     const userId = getUserByToken(req);
 
     if (!userId) {
         return res.status(500).json({ message: 'Usuário inválido' });
     }
 
-    const { message } = req.body;
-
-    
+    const result = await model.generateContent([prompt]);
 
     // Faz alguma coisa com o ID do usuario
     // :)
 
-    return res.status(201).json({ message: 'Sucesso' });
+    return res.status(201).json({ message: 'Sucesso', response: result.response.text() });
 })
-
 
 // ==========================================
 //              PROJETO
