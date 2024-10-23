@@ -41,12 +41,11 @@ router.post('/chat', async (req, res) => {
 // Salvando o projeto no banco de dados:
 router.post("/project", async (req, res) => {
     const { name, bpm, instruments, tracks} = req.body;
-
     const userId = getUserByToken(req);
 
     // Verifica o usuário
     if (!userId) {
-        return res.status(500).json({ message: 'Usuário inválido' });
+        return res.status(401).json({ message: 'Usuário inválido' });
     }
 
     try {
@@ -55,43 +54,54 @@ router.post("/project", async (req, res) => {
             name,
             bpm,
             instruments,
-            tracks
+            tracks,
+            userId
         });
 
         await newProject.save();
-
+        return res.status(201).json({message: 'Projeto criado com sucesso'})
     } catch (err) {
         return res.status(500).json({
             message: "Erro ao criar o projeto", err
         });
     }
+});
 
-    return res.status(201).json({message: 'Projeto criado com sucesso'})
-})
-
-//========================================
-//         V CONTINUAR ABAIXO V
-//========================================
-// Salvando no projeto
-router.put('/saveProject', async (req, res) => {
-    const { name, bpm, instruments, tracks} = req.body;
-
-    const userId = getUserByToken(req);
+// Atualizando um projeto existente
+router.put('/project', async (req, res) => {
+    const { id, name, bpm, instruments, tracks } = req.body;
+    const userId = await getUserByToken(req);
 
     if (!userId) {
-        return res.status(500).json({ message: 'Usuário inválido' });
+        return res.status(401).json({ message: 'Usuário inválido' });
     }
 
-    // Faz alguma coisa com o ID do usuario
-    // :)
+    try {
+        // Verifica se o projeto existe
+        const project = await Project.findById(id);
+        if (!project) {
+            return res.status(404).json({ message: 'Projeto não encontrado' });
+        }
 
-    return res.status(201).json({ message: 'Sucesso' });
+        // Verifica se o usuário é o dono do projeto
+        if (project.userId !== userId) {
+            return res.status(401).json({ message: 'Usuário não autorizado' });
+        }
 
-})
+        // Atualiza o projeto
+        project.name = name || project.name;
+        project.bpm = bpm || project.bpm;
+        project.instruments = isntruments|| project.instruments;
+        project.tracks = tracks || project.tracks;
 
-
-
-
+        await project.save(); // Salva as alterações
+        return res.status(200).json({ message: 'Projeto atualizado com sucesso', project});
+    } catch (err) {
+        return res.status(500).json({
+            message: "Erro ao atualizar o projeto", err
+        });
+    }
+});
 
 // ==========================================
 //              AUTENTICAÇÃO
@@ -104,7 +114,6 @@ const newSession = async (userId) => {
     });
 
     await session.save();
-
     return session.token;
 }
 
