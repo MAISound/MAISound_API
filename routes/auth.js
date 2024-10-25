@@ -48,9 +48,6 @@ router.post('/chat', async (req, res) => {
 
     const result = await model.generateContent([basePrompt + prompt]);
 
-    // Faz alguma coisa com o ID do usuario
-    // :)
-
     return res.status(200).json({ message: 'Sucesso', response: result.response.text() });
 })
 
