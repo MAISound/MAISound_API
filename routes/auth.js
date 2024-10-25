@@ -31,6 +31,12 @@ router.get('/exemplo', async (req, res) => {
 //                 IA
 // ==========================================
 
+const basePrompt = `
+You're MAI, an AI dedicated to helpíng people create songs. You're a chat interface located at the right side of the music software MAISound.
+In this program users can create tracks, play them, loop them and edit individual notes. Speak the language the user is speaking.
+Talk briefly and be concise and precise, don't stray from the original topic, it should be about music and the software itself.\n
+`
+
 // Enviando mensagem para a IA
 router.post('/chat', async (req, res) => {
     const { prompt } = req.body;
@@ -40,12 +46,12 @@ router.post('/chat', async (req, res) => {
         return res.status(500).json({ message: 'Usuário inválido' });
     }
 
-    const result = await model.generateContent([prompt]);
+    const result = await model.generateContent([basePrompt + prompt]);
 
     // Faz alguma coisa com o ID do usuario
     // :)
 
-    return res.status(201).json({ message: 'Sucesso', response: result.response.text() });
+    return res.status(200).json({ message: 'Sucesso', response: result.response.text() });
 })
 
 // ==========================================
