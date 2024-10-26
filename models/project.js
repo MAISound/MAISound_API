@@ -15,6 +15,7 @@ const NoteSchema = new mongoose.Schema({
 
 const TrackSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    startTime: { type: Number, required: true },
     duration: { type: Number, required: true },  // Duration of the track in seconds or beats
     instrumentIndex: { type: Number, required: true },  // Refers to the instrument index
     volume: { type: Number, default: 100 },  // Track volume as a percentage

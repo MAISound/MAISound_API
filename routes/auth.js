@@ -86,8 +86,8 @@ router.post("/project", async (req, res) => {
 
 // Recebendo tudo de um projeto
 router.get("/project/:id", async (req, res) => {
-    //const { name, bpm, instruments, tracks } = req.body;
     const userId = await getUserByToken(req);
+    const projectId = req.params.id;
 
     // Verifica o usuário
     if (!userId) {
@@ -95,20 +95,21 @@ router.get("/project/:id", async (req, res) => {
     }
 
     try {
-        // Criar um novo projeto
-        const newProject = new Project({
-            name,
-            bpm,
-            instruments,
-            tracks,
-            userId
-        });
+        // Tenta deletar o projeto pelo ID e userId
+        const project = await Project.findOne({ _id: projectId, userId: userId });
 
-        await newProject.save();
-        return res.status(201).json({message: 'Projeto criado com sucesso'})
+        if (!project) {
+            return res.status(404).json({ message: 'Projeto não encontrado' });
+        }
+
+        // Retorna o projeto encontrado
+        return res.status(200).json({ 
+            message: 'Projeto encontrado com sucesso',
+            project: project // Retorna o projeto aqui
+        });
     } catch (err) {
         return res.status(500).json({
-            message: "Erro ao criar o projeto", err
+            message: "Erro ao procurar o projeto", error: err.message
         });
     }
 });
@@ -170,38 +171,34 @@ router.delete("/project/:id", async (req, res) => {
     }
 });
 
-// Atualizando um projeto existente
-router.put('/project', async (req, res) => {
-    const { id, name, bpm, instruments, tracks } = req.body;
+// Atualizando um projeto no banco de dados
+router.put("/project/:id", async (req, res) => {
+    const projectId = req.params.id;
+    const { name, bpm, instruments, tracks } = req.body;
     const userId = await getUserByToken(req);
 
+    // Verifica o usuário
     if (!userId) {
         return res.status(401).json({ message: 'Usuário inválido' });
     }
 
     try {
-        // Verifica se o projeto existe
-        const project = await Project.findById(id);
-        if (!project) {
+        // Tenta encontrar e atualizar o projeto
+        const updatedProject = await Project.findOneAndUpdate(
+            { _id: projectId, userId: userId },
+            { name, bpm, instruments, tracks },
+            { new: true } // Retorna o documento atualizado
+        );
+
+        if (!updatedProject) {
             return res.status(404).json({ message: 'Projeto não encontrado' });
         }
 
-        // Verifica se o usuário é o dono do projeto
-        if (project.userId !== userId) {
-            return res.status(401).json({ message: 'Usuário não autorizado' });
-        }
-
-        // Atualiza o projeto
-        project.name = name || project.name;
-        project.bpm = bpm || project.bpm;
-        project.instruments = instruments || project.instruments;
-        project.tracks = tracks || project.tracks;
-
-        await project.save(); // Salva as alterações
-        return res.status(200).json({ message: 'Projeto atualizado com sucesso', project});
+        return res.status(200).json({ message: 'Projeto atualizado com sucesso', project: updatedProject });
     } catch (err) {
         return res.status(500).json({
-            message: "Erro ao atualizar o projeto", err
+            message: "Erro ao atualizar o projeto",
+            error: err.message,
         });
     }
 });
