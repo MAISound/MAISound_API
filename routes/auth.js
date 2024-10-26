@@ -58,7 +58,7 @@ router.post('/chat', async (req, res) => {
 // Salvando o projeto no banco de dados:
 router.post("/project", async (req, res) => {
     const { name, bpm, instruments, tracks } = req.body;
-    const userId = getUserByToken(req);
+    const userId = await getUserByToken(req);
 
     // Verifica o usuário
     if (!userId) {
@@ -80,6 +80,61 @@ router.post("/project", async (req, res) => {
     } catch (err) {
         return res.status(500).json({
             message: "Erro ao criar o projeto", err
+        });
+    }
+});
+
+// Recebendo tudo de um projeto
+router.get("/project/:id", async (req, res) => {
+    //const { name, bpm, instruments, tracks } = req.body;
+    const userId = await getUserByToken(req);
+
+    // Verifica o usuário
+    if (!userId) {
+        return res.status(401).json({ message: 'Usuário inválido' });
+    }
+
+    try {
+        // Criar um novo projeto
+        const newProject = new Project({
+            name,
+            bpm,
+            instruments,
+            tracks,
+            userId
+        });
+
+        await newProject.save();
+        return res.status(201).json({message: 'Projeto criado com sucesso'})
+    } catch (err) {
+        return res.status(500).json({
+            message: "Erro ao criar o projeto", err
+        });
+    }
+});
+
+
+// Recebendo APENAS NOME dos projetos
+router.get("/project", async (req, res) => {
+    const userId = await getUserByToken(req);
+
+    // Verifica o usuário
+    if (!userId) {
+        return res.status(401).json({ message: 'Usuário inválido' });
+    }
+
+    try {
+
+        // Busca projetos
+        const projects = await Project.find({ userId: userId })
+
+        // Extrai apenas os nomes dos projetos
+        const projectNames = projects.map(project => project.name);
+
+        return res.status(200).json({message: 'Projetos encontrados', projectNames: projectNames})
+    } catch (err) {
+        return res.status(404).json({
+            message: "Não foi possivel buscar por projetos", err
         });
     }
 });
@@ -135,7 +190,11 @@ const newSession = async (userId) => {
 }
 
 const getUserByToken = async (req) => {
-    const token = req?.cookies["session"]
+    // RETORNA UM TOKEN PADRAO POR ENQUANTO
+    console.log("ALERTA: ESTAMOS RETORNANDO UM TOKEN PADRÃO POR ENQUANTO!!!")
+    const token = "947d9e68-de2f-42c0-890b-d38a57106fc3"
+
+    //const token = req?.cookies["session"]
 
     // Caso o token não exista ou seja invalido retorne null
     if (!token) {
