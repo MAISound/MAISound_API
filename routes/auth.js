@@ -68,11 +68,8 @@ router.post("/project", async (req, res) => {
     try {
         // Criar um novo projeto
         const newProject = new Project({
-            name,
-            bpm,
-            instruments,
-            tracks,
-            userId
+            name: name,
+            userId: userId,
         });
 
         await newProject.save();

@@ -27,7 +27,7 @@ const ProjectSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
     name: { type: String, required: true },
     bpm: { type: Number, default: 130 },
-    instruments: { type: [InstrumentSchema], required: true },  // Instrument definition
+    instruments: { type: [InstrumentSchema], default: [] },  // Instrument definition
     tracks: { type: [TrackSchema], default: [] },  // Track definition, now with notes
     createdAt: { type: Date, default: Date.now },
 });
