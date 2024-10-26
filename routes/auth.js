@@ -113,8 +113,7 @@ router.get("/project/:id", async (req, res) => {
     }
 });
 
-
-// Recebendo APENAS NOME dos projetos
+// Recebendo APENAS NOME e ID dos projetos
 router.get("/project", async (req, res) => {
     const userId = await getUserByToken(req);
 
@@ -126,15 +125,47 @@ router.get("/project", async (req, res) => {
     try {
 
         // Busca projetos
-        const projects = await Project.find({ userId: userId })
+        const projects = await Project.find({ userId: userId });
 
-        // Extrai apenas os nomes dos projetos
-        const projectNames = projects.map(project => project.name);
+        // Extrai apenas os nomes dos projetos e seus IDs
+        const projectList = projects.map(project => ({
+            id: project._id,
+            name: project.name
+        }));
 
-        return res.status(200).json({message: 'Projetos encontrados', projectNames: projectNames})
+        return res.status(200).json({ 
+            message: 'Projetos encontrados', 
+            projects: projectList 
+        });
     } catch (err) {
         return res.status(404).json({
             message: "Não foi possivel buscar por projetos", err
+        });
+    }
+});
+
+// Deletando um projeto
+router.delete("/project/:id", async (req, res) => {
+    const userId = await getUserByToken(req);
+    const projectId = req.params.id;
+
+    // Verifica o usuário
+    if (!userId) {
+        return res.status(401).json({ message: 'Usuário inválido' });
+    }
+
+    try {
+        // Tenta deletar o projeto pelo ID e userId
+        const deletedProject = await Project.findOneAndDelete({ _id: projectId, userId: userId });
+
+        if (!deletedProject) {
+            return res.status(404).json({ message: 'Projeto não encontrado' });
+        }
+
+        return res.status(200).json({ message: 'Projeto deletado com sucesso' });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Erro ao tentar deletar o projeto", error: err.message
         });
     }
 });
