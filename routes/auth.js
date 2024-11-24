@@ -258,6 +258,31 @@ router.get('/', async (req, res) => {
     return res.status(500).json({ message: 'Não foi possivel validar token do usuário' });
 })
 
+// Logout
+router.post('/logout', async (req, res) => {
+    try {
+        // Recuperar o token da sessão no cookie
+        const token = req.cookies.session;
+
+        if (!token) {
+            return res.status(400).json({ message: 'Nenhuma sessão ativa encontrada' });
+        }
+
+        // Remover a sessão do banco de dados ou cache
+        const sessionRemoved = await removeSession(token);
+        if (!sessionRemoved) {
+            return res.status(400).json({ message: 'Erro ao encerrar a sessão' });
+        }
+
+        // Limpar o cookie de sessão
+        res.clearCookie('session', { httpOnly: true });
+
+        return res.status(200).json({ message: 'Logout realizado com sucesso' });
+    } catch (err) {
+        return res.status(500).json({ message: 'Erro ao fazer logout', err });
+    }
+});
+
 // Registro
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -362,7 +387,7 @@ router.get('/user', async (req, res) => {
 
     try {
         const user = await User.findById(userId);
-        return res.status(200).json({ message: 'Usuário encontrado com sucesso', user });
+        return res.status(200).json({ message: 'Usuário encontrado com sucesso', user: user });
     } catch (err) {
         return res.status(500).json({ message: 'Erro ao buscar usuário', err });
     }    
