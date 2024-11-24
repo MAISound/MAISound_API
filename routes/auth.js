@@ -214,6 +214,16 @@ const newSession = async (userId) => {
     return session.token;
 }
 
+const removeSession = async (token) => {
+    try {
+        const result = await Session.deleteOne({ token });
+        return result.deletedCount > 0;
+    } catch (err) {
+        console.error('Erro ao remover sessão:', err);
+        return false;
+    }
+};
+
 const getUserByToken = async (req) => {
     // RETORNA UM TOKEN PADRAO POR ENQUANTO
     console.log("ALERTA: ESTAMOS RETORNANDO UM TOKEN PADRÃO POR ENQUANTO!!!")
