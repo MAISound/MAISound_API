@@ -248,8 +248,12 @@ router.get('/', async (req, res) => {
     const token = await getUserByToken(req);
 
     if (token) {
-        return res.status(201).json({ message: 'Usuário autenticado com sucesso' });
+        
+    // Definir o token como cookie e retornar sucesso
+    res.cookie('session', token, { httpOnly: true });
+        return res.status(201).json({ message: 'Usuário autenticado com sucesso', token: token });
     }
+
 
     return res.status(500).json({ message: 'Não foi possivel validar token do usuário' });
 })
@@ -346,6 +350,22 @@ router.get('/users', async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Erro ao listar usuários', err });
     }
+});
+
+// Buscar usuário
+router.get('/user', async (req, res) => {
+    const userId = await getUserByToken(req);
+
+    if (!userId) {
+        return res.status(500).json({ message: 'Usuário inválido' });
+    }
+
+    try {
+        const user = await User.findById(userId);
+        return res.status(200).json({ message: 'Usuário encontrado com sucesso', user });
+    } catch (err) {
+        return res.status(500).json({ message: 'Erro ao buscar usuário', err });
+    }    
 });
 
 module.exports = router;
