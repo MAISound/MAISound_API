@@ -216,7 +216,7 @@ const newSession = async (userId) => {
 
 const removeSession = async (token) => {
     try {
-        const result = await Session.deleteOne({ token });
+        const result = await Session.deleteOne({ token: token });
         return result.deletedCount > 0;
     } catch (err) {
         console.error('Erro ao remover sessão:', err);
@@ -224,12 +224,39 @@ const removeSession = async (token) => {
     }
 };
 
+const getOnlyToken = async (req) => {
+    var token = req?.cookies["session"]
+
+    // Pega o token pelo auth header
+    if (!token) {
+        const authHeader = req.headers['authorization']; // Get the Authorization header
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1]; // Extract the token from "Bearer <token>"
+        }
+    }
+
+    // Caso o token não exista ou seja invalido retorne null
+    if (!token) {
+        return null;
+    }
+
+    return token;
+}
+
 const getUserByToken = async (req) => {
     // RETORNA UM TOKEN PADRAO POR ENQUANTO
-    console.log("ALERTA: ESTAMOS RETORNANDO UM TOKEN PADRÃO POR ENQUANTO!!!")
-    const token = "947d9e68-de2f-42c0-890b-d38a57106fc3"
+    //console.log("ALERTA: ESTAMOS RETORNANDO UM TOKEN PADRÃO POR ENQUANTO!!!")
+    //const token = "947d9e68-de2f-42c0-890b-d38a57106fc3"
 
-    //const token = req?.cookies["session"]
+    var token = req?.cookies["session"]
+
+    // Pega o token pelo auth header
+    if (!token) {
+        const authHeader = req.headers['authorization']; // Get the Authorization header
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1]; // Extract the token from "Bearer <token>"
+        }
+    }
 
     // Caso o token não exista ou seja invalido retorne null
     if (!token) {
@@ -272,7 +299,7 @@ router.get('/', async (req, res) => {
 router.post('/logout', async (req, res) => {
     try {
         // Recuperar o token da sessão no cookie
-        const token = req.cookies.session;
+        const token = await getOnlyToken(req);
 
         if (!token) {
             return res.status(400).json({ message: 'Nenhuma sessão ativa encontrada' });
@@ -280,6 +307,7 @@ router.post('/logout', async (req, res) => {
 
         // Remover a sessão do banco de dados ou cache
         const sessionRemoved = await removeSession(token);
+
         if (!sessionRemoved) {
             return res.status(400).json({ message: 'Erro ao encerrar a sessão' });
         }

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 // Definir um schema para as faixas, se necessário
 const InstrumentSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    type: { type: String, required: true, default: "piano" },
     color: { type: String, required: true },
     index: { type: Number, required: true },
 });
