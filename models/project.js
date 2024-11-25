@@ -6,6 +6,7 @@ const InstrumentSchema = new mongoose.Schema({
     type: { type: String, required: true, default: "piano" },
     color: { type: String, required: true },
     index: { type: Number, required: true },
+    volume: { type: Number, required: false, default: 0.5 }
 });
 
 const NoteSchema = new mongoose.Schema({
